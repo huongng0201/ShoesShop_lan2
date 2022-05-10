@@ -3,7 +3,8 @@ const stackName ={
     detailStack: 'DetailStack',
     loginStack:'LoginStack',
     signupStack: 'SignupStack',
-    cartOrderStack: 'CartOrderStack'
+    cartOrderStack: 'CartOrderStack',
+    editProfileStack: 'EditProfileStack'
 
 }
 

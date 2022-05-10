@@ -11,6 +11,7 @@ const COLORS = {
    opacityWhite:'rgba(255,255,255,0,5)',
    gray:'#bbbbbb',
    darkgray:'#757575',
-   grey:'#424242'
+   grey:'#424242',
+   superlightteal:'#b2dfdb'
 }
 export default COLORS

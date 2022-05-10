@@ -1,49 +1,58 @@
-import { Text, View, StyleSheet, TextInput as RNTextInput, TouchableOpacity, Button } from 'react-native'
-import React, { Component } from 'react';
+import { Text, View, StyleSheet, TextInput as RNTextInput, TouchableOpacity, Button, Alert } from 'react-native'
+import React, { useState} from 'react';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import TextInput from './components/TextInput';
 import { LoginButton, AccessToken } from 'react-native-fbsdk-next';
-import { useState } from 'react';
 import { navigate } from '../navigation/NavigationWithoutProp';
 import HomeScreen from '../screens/HomeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {stackName} from '../configs/navigationConstants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
+export default function LoginUI ({navigation, setIsSignIn}) {
 
-export default function LoginUI ({navigation}) {
+    const hanldePressEmail =(email)=>{
+        setEmail(email)
+        setErr(null)
+    }
+    const hanldePressPassword=(password)=>{
+        setPassword(password)
+        setErr(null)
+    }
+
 
     const [email, setEmail] =useState('')
     const [id, setId]=useState('')
     const [password, setPassword] =useState('')
+    const [err, setErr] =useState(null)
 
-    const login = async() =>{
-        const response = await fetch('http://svcy3.myclass.vn/api/Users/signin', {
+
+    const login = () =>{
+      fetch('http://svcy3.myclass.vn/api/Users/signin', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJodW9uZ3NsaWZlQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlZJRVdfUFJPRklMRSIsIm5iZiI6MTY1MTQwNDM1NSwiZXhwIjoxNjUxNDA3OTU1fQ.H31O-_2bcFqeHnZc88g0lBgCYBg4d5mnWhlGBdCJSCo'
             },
             body: JSON.stringify({email:email, password: password })
         })
-        // console.log(response);
-        try {
-            const data = await response.json()
-            navigation.navigate(stackName.homeStack, 'HomeScreen')
-        //    navigation.navigate(stackName.homeStack);
-        // navigation.dispatch(
-        //     CommonActions.navigate({
-        //       name: 'HomeTab'
-        //     }))
-        }
-
-
-        catch (e) {
-            console.log(e)
-        }
-       
-    }
+        .then((response) => response.json())
+        .then(async (data) => {
+          if (data.statusCode === 200) {
+            await AsyncStorage.setItem("accessToken", data.content.accessToken);
+            setIsSignIn(false);
+            navigation.navigate(stackName.homeStack, "HomeScreen");
+          } else {
+            setErr(data.message);
+            Alert.alert("Email or Password is wrong. Please try again.");
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    };
+           
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
@@ -52,8 +61,19 @@ export default function LoginUI ({navigation}) {
                 </View>
 
                 <View style={styles.loginForm}>
-                    <TextInput title='Email' placeholder='mail@example.com' />
-                    <TextInput title="Password" placeholder='********' secureTextEntry password />
+                    <TextInput 
+                    title='Email' 
+                    placeholder='mail@example.com' 
+                    value={email} 
+                    onChangeText ={hanldePressEmail} 
+                    autoCapitalize = "none"/>
+                    <TextInput 
+                    title="Password" 
+                    placeholder='********' 
+                    secureTextEntry password 
+                    value={password} 
+                    onChangeText={hanldePressPassword}
+                    autoCapitalize = "none"/>
                 </View>
 
                 <TouchableOpacity style={styles.btnLogin} onPress={()=>login()}>

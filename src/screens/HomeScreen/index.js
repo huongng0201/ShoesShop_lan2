@@ -11,9 +11,6 @@ import {navigate} from '../../navigation/NavigationWithoutProp';
 import {stackName} from '../../configs/navigationConstants';
 
 
-// import {useDispatch, useSelector} from 'react-redux';
-// import {requestListShoes} from '../../redux/thunk';
-
 const HomeScreen=() => {
   const [data, setData] = useState([])
   const [id, setId] = useState('')
@@ -22,15 +19,12 @@ const HomeScreen=() => {
   // const [loading, setLoading]=useState(false)
 
   const load = async()=>{
-      //call API
-      try{
-        //success => save response to store
+      try{ 
         const response = await 
           fetch('http://svcy3.myclass.vn/api/Product', {
             method: 'GET',
         }) 
         const data = await response.json()
-        // console.log(data);
         setData(data) 
       }
       catch (error) {
@@ -38,26 +32,20 @@ const HomeScreen=() => {
       } 
       }
       const loadCategories = async()=>{
-        //call API
         try{
-          //success => save response to store
           const response = await 
             fetch('http://svcy3.myclass.vn/api/Product/getAllCategory', {
               method: 'GET',
           }) 
           const dataCategories = await response.json()
-          // console.log(dataCategories);
           setDataCategories(dataCategories) 
         }
         catch (error) {
           console.log("error");;
         } 
         }
-
-     
-
       const newData = data.content
-// console.log(newData);
+
      const onPressItem = (id)=>{
         navigate(stackName.detailStack, {id: id});
      
