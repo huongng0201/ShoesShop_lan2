@@ -5,6 +5,7 @@ import TextInput from './components/TextInput';
 import axios from 'axios';
 import { checkRequired, emailValidation, nameValidation, phoneValidation, rangeValidation } from './ulties/validator';
 import { navigate } from '../navigation/NavigationWithoutProp';
+import { stackName } from '../configs/navigationConstants';
 
 export default class RegisterUI extends Component {
     state = {
@@ -77,6 +78,9 @@ this.setState({error:{...this.state.error, email, password, name, phone}})
             url:'http://svcy3.myclass.vn/api/Users/signup',
         data: {...this.state.value, gender: true}
      })
+     Alert.alert("You have registered sucessfully. Please turn to Login page to signin")
+     this.navigation.navigate(stackName.loginStack, 'LoginStack')
+     
         
         } catch (error) {
             if (error.message.includes('400')){
@@ -105,6 +109,7 @@ this.setState({error:{...this.state.error, email, password, name, phone}})
                     <TextInput
                         onBlur={() => this.onBlur(value.email, 'email')}
                         title='Email' placeholder='mail@example.com'
+                        autoCapitalize="none"
                         value={value.email}
                         onChangeText={(valueText) => this.onChangeText(valueText, 'email')}
                         errorMsg={error.email} />

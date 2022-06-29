@@ -16,10 +16,10 @@ const tabBarIcon = ({route: {name}, size, focused}) =>{
    CartOrderTab: 'shopping-bag',
    ProfileTab: 'user'
  }
- const backgroundColor = focused? COLORS.darkteal: 'transparent'
+ const backgroundColor = focused? COLORS.darkgray: 'transparent'
  return (
    <View style={[styles.tabBarIcon, {backgroundColor}]}>
- <EntypoIcon name={icons[name]} color={COLORS.orange} size={size} />
+ <EntypoIcon name={icons[name]} color={COLORS.white} size={size} />
  </View>
  )
  
@@ -34,22 +34,25 @@ const screenOptions =({route})=>({
 })
 
 
-export class HomeTab extends Component {
-  render() {
+function HomeTab ({setIsSignIn}) {
+console.log(setIsSignIn);
+const HomeScreen = Screen.HomeScreen;
     return (
     
     <BottomTab.Navigator screenOptions={screenOptions}>
-        <BottomTab.Screen name={tabName.homeTab} component={Screen.HomeScreen} />
+        <BottomTab.Screen name={tabName.homeTab}  >
+          {(props)=> <HomeScreen {...props} setIsSignIn={setIsSignIn} />}
+          </BottomTab.Screen>
         <BottomTab.Screen name={tabName.cartOrderTab} component={Screen.CartOrder} />
         <BottomTab.Screen name={tabName.profileTab} component={Screen.ProfileScreen} />
      
     </BottomTab.Navigator>
     )
   }
-}
+
 
 export default HomeTab;
 
 const styles = StyleSheet.create({
-  tabBarIcon: { width:'40%', height: '100%', marginTop:10, justifyContent:'center', alignItems:'center', borderRadius:10}
+  tabBarIcon: { width:'40%', height: '100%', marginTop:10, justifyContent:'center', alignItems:'center', borderRadius:10, }
 })

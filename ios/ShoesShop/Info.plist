@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
+
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -25,6 +26,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
+	
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
@@ -72,20 +74,23 @@
 		<string>SimpleLineIcons.ttf</string>
 		<string>Zocial.ttf</string>
 	</array>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fb694475151791739</string>
-			</array>
-		</dict>
-	</array>
-	<key>FacebookAppID</key>
-	<string>694475151791739</string>
-	<key>FacebookDisplayName</key>
-	<string>ShoesShop</string>
-	<key>FacebookAutoLogAppEventsEnabled</key>
-	<true/>
+
+
+<key>CFBundleURLTypes</key>
+<array>
+  <dict>
+  <key>CFBundleURLSchemes</key>
+  <array>
+    <string>fb694475151791739</string>
+  </array>
+  </dict>
+</array>
+<key>FacebookAppID</key>
+<string>694475151791739</string>
+<key>FacebookClientToken</key>
+<string>f00218604ed67ca8b403984df6baaeac</string>
+<key>FacebookDisplayName</key>
+<string>ShoesShop</string>
+
 </dict>
 </plist>

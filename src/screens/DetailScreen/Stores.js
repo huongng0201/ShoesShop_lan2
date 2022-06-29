@@ -29,13 +29,15 @@ export default function Stores() {
         stores()
     }, [])
     const storesData = store.content
-    console.log(storesData);
-    const viewStores = () => {
-        return (
-            <View>
-                <MapView
+    // console.log(storesData);
+    const storeAdd = () => {
+        return storesData.map((s, index) => {
+            return (
+                <View key={index} style={{ marginVertical: 10 }}>
+                    <Text>{s.name}: {s.description}</Text>
+                    <MapView
                     provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-                    style={{ height: 400, width: '100%' }}
+                    style={{ height: 300, width: '90%', marginTop:10 }}
                     region={{
                         latitude: 10.762622,
                         longitude: 106.660172,
@@ -43,23 +45,30 @@ export default function Stores() {
                         longitudeDelta: 0.05,
                     }}
                 >
-                    {storesData && storesData.map((m,index) => {
                         <Marker
-                            key={index}
-                            coordinate={{latitude: m.latitude, longitude: m.longtitude }}
-                            title={m.name}
+                            // key={index}
+                            coordinate={{latitude: Number(s.latitude), longitude: Number(s.longtitude) }}
+                            title={s.alias}
                         />
-                    })
-                    }
+                   
+                    
                 </MapView>
+                </View>
+            )
+        })
+    }
+    const viewStores = () => {
+        return (
+            <View>
+                
             </View>
         )
 
     }
     return (
         <View>
-            <Text>Stores</Text>
-
+            <Text style={{ fontWeight: 'bold', fontSize:20, color: COLORS.grey }}>Stores:</Text>
+            {storesData && storeAdd()}
             {viewStores()}
         </View>
     )

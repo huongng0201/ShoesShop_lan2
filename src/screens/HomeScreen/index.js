@@ -1,129 +1,153 @@
-import { Text, View , StatusBar, FlatList, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState, useEffect,  } from 'react'
+import { Text, View, StatusBar, FlatList, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native'
+import React, { useState, useEffect, } from 'react'
 import COLORS from '../../themes';
-import {BackgroundView} from '../../components';
-import {ShoeItem} from './components/ShoeItem' ;
-import axios from 'axios';
-import { loadOptions } from '@babel/core';
-import AntDesign from 'react-native-vector-icons/AntDesign'
-import DetailScreen from '../DetailScreen';
-import {navigate} from '../../navigation/NavigationWithoutProp';
-import {stackName} from '../../configs/navigationConstants';
+import { navigate, navigationRef } from '../../navigation/NavigationWithoutProp';
+import { stackName } from '../../configs/navigationConstants';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { roundToNearestPixel } from 'react-native/Libraries/Utilities/PixelRatio';
 
 
-const HomeScreen=() => {
+const HomeScreen = ({ navigation, setIsSignIn }) => {
+  // console.log(setIsSignIn);
   const [data, setData] = useState([])
   const [id, setId] = useState('')
   const [name, setName] = useState('')
   const [dataCategories, setDataCategories] = useState([])
-  // const [loading, setLoading]=useState(false)
+ const [byCategory, setByCateGory] =useState([])
 
-  const load = async()=>{
-      try{ 
-        const response = await 
-          fetch('http://svcy3.myclass.vn/api/Product', {
-            method: 'GET',
-        }) 
-        const data = await response.json()
-        setData(data) 
-      }
-      catch (error) {
-        console.log("error");;
-      } 
-      }
-      const loadCategories = async()=>{
-        try{
-          const response = await 
-            fetch('http://svcy3.myclass.vn/api/Product/getAllCategory', {
-              method: 'GET',
-          }) 
-          const dataCategories = await response.json()
-          setDataCategories(dataCategories) 
-        }
-        catch (error) {
-          console.log("error");;
-        } 
-        }
-      const newData = data.content
+  const load = async () => {
+    try {
+      const response = await
+        fetch('http://svcy3.myclass.vn/api/Product', {
+          method: 'GET',
+        })
+      const data = await response.json()
+      setData(data)
+    }
+    catch (error) {
+      console.log("error");;
+    }
+  }
+  const loadCategories = async () => {
+    try {
+      const response = await
+        fetch('http://svcy3.myclass.vn/api/Product/getAllCategory', {
+          method: 'GET',
+        })
+      const dataCategories = await response.json()
+      setDataCategories(dataCategories.content)
+    }
+    catch (error) {
+      console.log("error");;
+    }
+  }
 
-     const onPressItem = (id)=>{
-        navigate(stackName.detailStack, {id: id});
-     
-      }
+  const newData = data.content
 
-   renderItem =({item})=>{
-     return(
-       <View style={styles.container}>
+  const onPressItem = (id) => {
+    navigate(stackName.detailStack, { id: id });
+  }
 
-       <View style={styles.image}>
-       <AntDesign name='hearto' size={20} style={{ marginLeft:100,marginTop:25}}/>
-       <TouchableOpacity onPress={()=>onPressItem(item.id)}>
-    <Image source={{uri: item.image}} style={{height: 150, width: 150, justifyContent:'center'}} 
-   />
-    </TouchableOpacity>
-       </View >
+  renderItem = ({ item }) => {
+    return (
+      <View style={styles.container}>
 
-       <View style={{height: 50, marginTop:10 }}>
-         <Text style={{fontSize:19}}>{item.name}</Text>
-       </View>
-       <View style={{ }}> 
-       <Text style={styles.price}>$ {item.price}</Text>
-      
-       </View>
+        <View style={styles.imagebg}>
+          {/* <AntDesign name='hearto' size={20} style={{ marginLeft: 100, marginTop: 25 }} /> */}
+          <View style={styles.image}>
+          <TouchableOpacity onPress={() => onPressItem(item.id)}>
+            <Image source={{ uri: item.image }} style={{ height: 150, width: 150, justifyContent: 'center' }}
+            />
+          </TouchableOpacity>
+          </View>
+        </View >
 
-       </View>
-     )
-   }
-   const arrCategories = dataCategories.content
-   const renderScrollView=()=>{
-    //  return arrCategories.map((item, index)=>{      
-    //    return(
-    //      <View style={[styles.container, {height:100}]}>
-    //   <Text style={{fontWeight:'bold', fontSize:20}}>{item.category}</Text>
-    //   </View>
-    //    )
-    //  })
-    
-   }
+        <View style={{ height: 50, marginTop: 10 }}>
+          <Text style={{ fontSize: 19 }}>{item.name}</Text>
+        </View>
+        <View style={{}}>
+          <Text style={styles.price}>$ {item.price}</Text>
+
+        </View>
+
+      </View>
+    )
+  }
+  const onPressByCategory = (category) => {
+    // console.log(category);
+    navigate(stackName.categoryStack, { category: category });
+  }
+  const renderScrollView = () => {
+    return dataCategories.map((item, index) => {
+      return (
+        <View key={index} style={[styles.container, { height: 50 }]}>
+          <TouchableOpacity onPress={()=>onPressByCategory(item.category)}>
+            <Text style={{ fontWeight: 'bold', fontSize: 25 }}>{item.category}</Text>
+          </TouchableOpacity>
+        </View>
+      )
+    })
+
+  }
 
   useEffect(() => {
-   load(),
-   loadCategories()
+    load(),
+      loadCategories()
   }, []);
 
-    return(
-     
-   
-  <View style={styles.container}>   
-  <ScrollView horizontal={true} 
-  contentContainerStyle={{alignItems:'center', justifyContent:'center'}}>
-    {dataCategories && renderScrollView()}
-    </ScrollView>
+  const handleLogout = async () => {
+    try{
+     await AsyncStorage.clear();
+      setIsSignIn(true);
+      navigation.navigate(stackName.loginStack, "LoginStack");
+    }
+    catch(e){
+      console.log(e);
+    }
+  };
+
+  return (
+    <View style={[styles.container, { height: 100 }]}>
+      <TouchableOpacity onPress={() => handleLogout()}>
+        <SimpleLineIcons name='logout' size={30} style={{ position: 'relative', top: 5, left: 310, color: COLORS.darkteal, marginTop:20 }} />
+      </TouchableOpacity>
+      <ScrollView horizontal={true}
+        contentContainerStyle={{ alignItems: 'center', justifyContent: 'center', }}>
+        {dataCategories && renderScrollView()}
+      </ScrollView>
       <FlatList
-        data={newData}      
+        data={newData}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         numColumns={2}
-        // ItemSeparatorComponent={() => <View style={{height: 60}} />}
-        // contentContainerStyle={{paddingBottom: 60, justifyContent:'center', marginRight:10}}
-        // showsVerticalScrollIndicator={false}
-        
-      /> 
+      // ItemSeparatorComponent={() => <View style={{height: 60}} />}
+      // contentContainerStyle={{paddingBottom: 60, justifyContent:'center', marginRight:10}}
+      // showsVerticalScrollIndicator={false}
 
-</View>  
-     
+      />
 
-    )
-  
+    </View>
+  )
+
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: StatusBar.currentHeight || 50,
-   marginLeft:12,
-   marginRight:12
+    // marginTop: StatusBar.currentHeight || 40,
+    marginTop: 50,
+    marginLeft: 12,
+    marginRight: 12
   },
- price:{fontSize:20, color: COLORS.darkgray, fontWeight:'bold'},
- image:{ backgroundColor: 'pink', borderRadius: 30,  justifyContent:'center', alignItems:'center', marginTop:25, height:160}
+  price: { fontSize: 20, color: COLORS.darkgray, fontWeight: 'bold' },
+  imagebg: { backgroundColor: COLORS.superlightteal, borderRadius: 30, justifyContent: 'center', alignItems: 'center', marginTop: 25, height: 160 },
+  image: { backgroundColor: COLORS.gray, 
+    borderRadius: 20, 
+    marginLeft:3,
+    alignItems: 'center', 
+    marginTop: 10,
+     height: 150,
+    width:'99%' },
+
 });
 export default HomeScreen;

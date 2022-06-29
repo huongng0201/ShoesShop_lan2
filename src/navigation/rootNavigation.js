@@ -5,10 +5,9 @@ import HomeTab from "./Tab/HomeTab";
 import Screen from "../screens";
 import LoginUI from "../LoginUI/Login";
 import RegisterUI from "../LoginUI/RegisterUI";
+import LikeHook from "../screens/DetailScreen/LikeHook";
 
 const Stack = createNativeStackNavigator()
-
-
 
 export default function RootNavigation () {
   const [isSignIn, setIsSignIn]=useState(true)
@@ -28,10 +27,14 @@ export default function RootNavigation () {
       :
       (
         <Stack.Navigator screenOptions ={{headerShown:false}}>
-<Stack.Screen name={stackName.homeStack} component= {HomeTab} />
+<Stack.Screen name={stackName.homeStack} >
+{(props) => <HomeTab {...props} setIsSignIn={setIsSignIn} />}
+</Stack.Screen>
 <Stack.Screen name={stackName.detailStack} component= {Screen.DetailScreen} />
 <Stack.Screen name={stackName.cartOrderStack} component= {Screen.CartOrder} />
 <Stack.Screen name={stackName.editProfileStack} component= {Screen.EditProfile} />
+<Stack.Screen name={stackName.categoryStack} component= {Screen.Category} />
+<Stack.Screen name={stackName.likeStack} component= {Screen.LikeHook} />
     </Stack.Navigator>
     
     )    

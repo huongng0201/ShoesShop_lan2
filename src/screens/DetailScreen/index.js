@@ -9,14 +9,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Like from './Like';
 import LikeHook from './LikeHook';
 import Stores from './Stores';
+import { LocalTile } from 'react-native-maps';
 
 export default function DetailScreen({ navigation, route }) {
   const [data, setData] = useState([])
   const [id, setId] = useState('')
   const [bgColor, setBgColor] = useState(null)
-  // const [productId, setProductId]= useState('')
   const [quantity, setQuantity] = useState('')
-  const [like, setLike] = useState('')
+  const [color, setColor]=useState(COLORS.darkgray)
 
   useEffect(() => {
     loadOneProduct()
@@ -36,7 +36,6 @@ export default function DetailScreen({ navigation, route }) {
       console.log("error");;
     }
   }
-
   const obj = data.content
 
   const relatedProducts = () => {
@@ -60,11 +59,10 @@ export default function DetailScreen({ navigation, route }) {
 
 
   const onPressAddToCart = async () => {
-    var oldData = await AsyncStorage.getItem("orderItem");
-    console.log(oldData);
+    var oldData = await AsyncStorage.getItem("orderDetail");
     oldData = JSON.parse(oldData);
-  
-    let checking = true;
+    // console.log(oldData);
+    let checking = true
     if (oldData != null) {
       oldData = oldData.map((item) => {
         if (item.productId == productId) {
@@ -76,6 +74,7 @@ export default function DetailScreen({ navigation, route }) {
         }
         return item;
       });
+
       if (checking) {
         await AsyncStorage.setItem(
           "orderDetail",
@@ -84,18 +83,60 @@ export default function DetailScreen({ navigation, route }) {
       } else {
         await AsyncStorage.setItem("orderDetail", JSON.stringify([...oldData]));
       }
+
     } else {
       await AsyncStorage.setItem(
         "orderDetail",
-        JSON.stringify([{ productId: route.params.id, quantity }])
+        JSON.stringify([{ productId, quantity }])
       );
     }
+    // AsyncStorage.clear()
     var temp = await AsyncStorage.getItem("orderDetail");
     console.log("=============Start=================");
     console.log(temp);
     console.log("=============End===================");
-
+  
   }
+
+  const like =async(id)=>{
+    setColor(COLORS.darkteal)
+  var oldData = await AsyncStorage.getItem("like");
+  oldData = JSON.parse(oldData);
+  let like = COLORS.darkteal
+  if (oldData != null) {
+    oldData = oldData.map((item) => {
+      if (item.productId == productId) {
+        like = COLORS.darkgray;
+        return {
+          productId,
+        };
+      }
+      return item;
+    });
+
+    if (like) {
+      await AsyncStorage.setItem(
+        "like",
+        JSON.stringify([...oldData, { productId}])
+      );
+    } else {
+      await AsyncStorage.setItem("like", JSON.stringify([...oldData]));
+    }
+
+  } else {
+    await AsyncStorage.setItem(
+      "like",
+      JSON.stringify([{ productId }])
+    );
+  }
+  // AsyncStorage.clear()
+  var tempLike = await AsyncStorage.getItem("like");
+  console.log("=============Start=================");
+  console.log(tempLike);
+  console.log("=============End===================");
+     
+  }
+
   const handleQuantity = (value) => {
     setQuantity(value)
   }
@@ -110,16 +151,19 @@ export default function DetailScreen({ navigation, route }) {
           <Image source={{ uri: obj.image }} style={{ height: 230, width: 250 }} />
           <Text style={{ fontSize: 25, fontWeight: 'bold', position: 'relative', bottom: 40, left: 100 }}>$ {obj.price}</Text>
           {/* <Like /> */}
-          <LikeHook />
+          
         </View>
-        <View style={{ flexDirection: 'row', position: 'relative', bottom: 20, }}>
+        <View style={{ flexDirection: 'row', position: 'relative', bottom: 30, alignItems:'center' }}>
           <Text style={{ fontSize: 25, fontWeight: 'bold', }}>Qty: </Text>
           <TextInput
             placeholder='0'
             onChangeText={handleQuantity}
             style={{ marginLeft: 5, fontSize: 25, fontWeight: 'bold', marginRight: 50 }}
           />
-
+ <View style={{marginRight:20}}>
+       <AntDesign name='like1' size={35} style={{color}} onPress={()=>like()} />
+        <Text style={{fontSize:15}} > Like </Text>
+         </View>
         </View>
 
         <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20, color: COLORS.grey }}>Size: </Text>
@@ -144,8 +188,9 @@ export default function DetailScreen({ navigation, route }) {
 
           {data && relatedProducts()}
         </ScrollView>
-        {/* <Stores /> */}
-
+        <View style={{marginTop:20}}>
+        <Stores />
+        </View>
       </View>
 
     )
@@ -153,13 +198,13 @@ export default function DetailScreen({ navigation, route }) {
 
   return (
 
-    <View style={{ flex: 1, marginLeft: 30, marginTop: 50 }}>
+    <View style={{ flex: 1, marginLeft: 30, marginTop: 70 }}>
       <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginRight: 30 }}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <AntDesign name='close' size={30} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigate(stackName.cartOrderStack)}>
-          <AntDesign name='shoppingcart' size={30} />
+        <TouchableOpacity onPress={() => navigate(stackName.cartOrderStack, {id:id})}>
+          <AntDesign name='shoppingcart' size={30} style={{color: COLORS.darkteal}}/>
         </TouchableOpacity>
       </View>
       <View style={{ flex: 8 }}>
@@ -167,13 +212,16 @@ export default function DetailScreen({ navigation, route }) {
           {obj && shoeDetail()}
         </ScrollView>
       </View>
-      <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginBottom: 20 }}>
-        <TouchableOpacity style={{ backgroundColor: COLORS.gray, height: 50, alignItems: 'center', width: 60, justifyContent: 'center', borderRadius: 50 }}>
-          <AntDesign name='hearto' size={30} onPress={() => loadCart()} />
+      <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginBottom: 30 }}>
+      <TouchableOpacity 
+      style={{color: COLORS.darkteal, fontWeight:'bold', backgroundColor:COLORS.gray1, height:60, width:60, paddingTop:10, paddingLeft:10, borderRadius:15 }}
+      onPress={() => navigate(stackName.likeStack, {id:id})}>
+          <AntDesign name='hearto' size={40} 
+          style={{color: COLORS.darkteal, fontWeight:'bold', }}/>
         </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => onPressAddToCart()} style={{ backgroundColor: COLORS.teal, height: 50, alignItems: 'center', width: 260, justifyContent: 'center', borderRadius: 10, marginRight: 20 }}>
-          <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'orange' }}> Add to Cart</Text>
+        <TouchableOpacity onPress={() => onPressAddToCart()} 
+        style={{ backgroundColor: COLORS.darkteal, height: 60, alignItems: 'center', width: 260, justifyContent: 'center', borderRadius: 10, marginRight: 20 }}>
+          <Text style={{ fontSize: 25, fontWeight: 'bold', color: COLORS.white }}> Add to Cart</Text>
         </TouchableOpacity>
       </View>
 

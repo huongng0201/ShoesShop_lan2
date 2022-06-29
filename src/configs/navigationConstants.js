@@ -4,7 +4,9 @@ const stackName ={
     loginStack:'LoginStack',
     signupStack: 'SignupStack',
     cartOrderStack: 'CartOrderStack',
-    editProfileStack: 'EditProfileStack'
+    editProfileStack: 'EditProfileStack',
+    categoryStack: 'CategoryStack',
+    likeStack:'LikeStack'
 
 }
 
